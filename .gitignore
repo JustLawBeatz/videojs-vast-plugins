@@ -25,7 +25,6 @@
 ehthumbs.db
 Thumbs.db
 /**/node_modules/
-/**/dist/**/
 /**/build/**/
 /vcode.code-workspace
 /**/coverage/
