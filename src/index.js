@@ -50,7 +50,7 @@ class Vast extends Plugin {
     // initialize videojs-contrib-ads
     if (!this.player.ads) return;
     const contrib = this.player.ads;
-    if (typeof contrib !== 'function') {
+    if (typeof contrib === 'function') {
       try {
         this.player.ads(videojsContribAdsOptions);
       } catch (e) {
