@@ -49,11 +49,15 @@ class Vast extends Plugin {
 
     // initialize videojs-contrib-ads
     if (!this.player.ads) return;
-    try {
-      this.player.ads(videojsContribAdsOptions);
-    } catch (e) {
-      console.error(e);
-    } //This method will call to schdedule Ad Breaks
+    const contrib = this.player.ads;
+    if (typeof contrib !== 'function') {
+      try {
+        this.player.ads(videojsContribAdsOptions);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    //This method will call to schdedule Ad Breaks
     this.debug("Plugin Initialised")
     player.scheduleAdBreak = (vastVjsOptions) => {
       this.scheduleAdBreak(vastVjsOptions);
