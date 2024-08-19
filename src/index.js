@@ -158,6 +158,7 @@ class Vast extends Plugin {
     this.vastClient = new VASTClient();
     // Test Code
     // eslint-disable-next-line no-param-reassign, no-prototype-builtins
+    console.log(this.options.customMacros);
     if (this.options.customMacros) {
       // eslint-disable-next-line no-param-reassign
       vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
