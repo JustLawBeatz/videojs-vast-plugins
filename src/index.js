@@ -74,7 +74,7 @@ class Vast extends Plugin {
       if (response.adType === 'vmap') {
         this.handleVmapXml(response.vmap);
       } else if (response.adType === 'vast') {
-        this.vastXMLHandler(response.xml)
+        this.vastXMLHandler(response.xml);
       }
     } else if (this.options.vmapUrl) {
       this.handleVMAP(this.options.vmapUrl);
@@ -159,9 +159,10 @@ class Vast extends Plugin {
     // Test Code
     // eslint-disable-next-line no-param-reassign, no-prototype-builtins
     console.log(this.options.customMacros);
-    if (this.options.customMacros) {
+    if (this.options.customMacros !== null) {
       // eslint-disable-next-line no-param-reassign
       vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
+      console.log(`vastUrl: ${vastUrl}`);
     }
     try {
       const response = await this.vastClient.get(vastUrl, {
