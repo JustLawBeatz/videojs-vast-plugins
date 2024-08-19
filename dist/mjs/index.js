@@ -876,8 +876,9 @@ var _Vast = class extends Plugin {
     var _a;
     this.vastClient = new VASTClient();
     console.log(this.options.customMacros);
-    if (this.options.customMacros) {
+    if (this.options.customMacros !== null) {
       vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
+      console.log(`vastUrl: ${vastUrl}`);
     }
     try {
       const response = await this.vastClient.get(vastUrl, {
