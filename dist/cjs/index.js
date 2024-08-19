@@ -696,6 +696,7 @@ var _Vast = class extends Plugin {
   }
   async handleVAST(vastUrl2, onError = null) {
     this.vastClient = new import_vast_client2.VASTClient();
+    console.log(this.options.customMacros);
     if (this.options.customMacros) {
       vastUrl2 = this.macroReplacement(vastUrl2, this.options.customMacros);
     }
