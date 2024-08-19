@@ -694,44 +694,16 @@ var _Vast = class extends Plugin {
   macroReplacement(url, customMacros) {
     return this.player.ads.adMacroReplacement(url, false, customMacros);
   }
-  async handleVAST(vastUrl2, onError = null) {
+  async handleVAST(vastUrl, onError = null) {
     this.vastClient = new import_vast_client2.VASTClient();
     console.log(this.options.customMacros);
     if (this.options.customMacros) {
-      vastUrl2 = this.macroReplacement(vastUrl2, this.options.customMacros);
+      vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
     }
     try {
-      const response = await this.vastClient.get(vastUrl2, {
+      const response = await this.vastClient.get(vastUrl, {
         allowMultipleAds: true,
         resolveAll: true
-      });
-      this.adsArray = response.ads ?? [];
-      if (this.adsArray.length === 0) {
-        onError?.();
-        const message = "VastVjs: Empty VAST XML";
-        this.player.trigger("vast.error", {
-          message,
-          tag: vastUrl2
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      onError?.();
-      const message = "VastVjs: Error while fetching VAST XML";
-      this.player.trigger("vast.error", {
-        message,
-        tag: vastUrl2
-      });
-    }
-  }
-  async handleVASTXml(vast, onError = null) {
-    this.vastClient = new import_vast_client2.VASTClient();
-    this.vastParser = new import_vast_client2.VASTParser();
-    try {
-      const response = await this.vastParser.parseVAST(vast, {
-        allowMultipleAds: true,
-        resolveAll: true,
-        url: this.options.adUrl
       });
       this.adsArray = response.ads ?? [];
       if (this.adsArray.length === 0) {
@@ -749,6 +721,35 @@ var _Vast = class extends Plugin {
       this.player.trigger("vast.error", {
         message,
         tag: vastUrl
+      });
+    }
+  }
+  async handleVASTXml(vast, onError = null) {
+    this.vastClient = new import_vast_client2.VASTClient();
+    console.log("calling handleVASTXml in postroll");
+    this.vastParser = new import_vast_client2.VASTParser();
+    try {
+      const response = await this.vastParser.parseVAST(vast, {
+        allowMultipleAds: true,
+        resolveAll: true,
+        url: this.options.adUrl
+      });
+      this.adsArray = response.ads ?? [];
+      if (this.adsArray.length === 0) {
+        onError?.();
+        const message = "VastVjs: Empty VAST XML";
+        this.player.trigger("vast.error", {
+          message,
+          tag: this.options.adUrl
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      onError?.();
+      const message = "VastVjs: Error while fetching VAST XML";
+      this.player.trigger("vast.error", {
+        message,
+        tag: this.options.adUrl
       });
     }
   }

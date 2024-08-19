@@ -193,12 +193,13 @@ class Vast extends Plugin {
   async handleVASTXml(vast, onError = null) {
     // Now let's fetch some adsonp
     this.vastClient = new VASTClient();
-    this.vastParser = new VASTParser()
+    console.log('calling handleVASTXml in postroll');
+    this.vastParser = new VASTParser();
     try {
       const response = await this.vastParser.parseVAST(vast, {
         allowMultipleAds: true,
         resolveAll: true,
-        url: this.options.adUrl
+        url: this.options.adUrl,
       });
       this.adsArray = response.ads ?? [];
       if (this.adsArray.length === 0) {
@@ -207,7 +208,7 @@ class Vast extends Plugin {
         const message = 'VastVjs: Empty VAST XML';
         this.player.trigger('vast.error', {
           message,
-          tag: vastUrl,
+          tag: this.options.adUrl,
         });
       }
     } catch (err) {
@@ -217,7 +218,7 @@ class Vast extends Plugin {
       const message = 'VastVjs: Error while fetching VAST XML';
       this.player.trigger('vast.error', {
         message,
-        tag: vastUrl,
+        tag: this.options.adUrl,
       });
     }
   }
@@ -231,7 +232,7 @@ class Vast extends Plugin {
 
   readAd() {
     const currentAd = this.getNextAd();
-    if (!currentAd) return
+    if (!currentAd) return;
     // Retrieve the CTA URl to render
     this.ctaUrl = Vast.getBestCtaUrl(currentAd?.linearCreative());
     this.debug('ctaUrl', this.ctaUrl);
