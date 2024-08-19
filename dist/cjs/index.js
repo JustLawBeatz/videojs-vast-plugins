@@ -579,7 +579,7 @@ var _Vast = class extends Plugin {
   constructor(player, options) {
     super(player, options);
     this.player = player;
-    const timeout = Boolean(options && (options["adUrl"] || options["vastUrl"] || options["vmapUrl"])) ? 5e3 : 0;
+    const timeout = options && (options["adUrl"] || options["vastUrl"] || options["vmapUrl"]) ? 5e3 : 0;
     const defaultOptions = {
       vastUrl: false,
       vmapUrl: false,
@@ -589,7 +589,8 @@ var _Vast = class extends Plugin {
       addSkipButton: true,
       debug: false,
       timeout: timeout || 5e3,
-      isLimitedTracking: false
+      isLimitedTracking: false,
+      customMacros: null
     };
     this.options = Object.assign(defaultOptions, options);
     this.setMacros();
@@ -624,8 +625,9 @@ var _Vast = class extends Plugin {
       const response = await fetchAdUrl(this.options.adUrl);
       if (response.adType === "vmap") {
         this.handleVmapXml(response.vmap);
-      } else if (response.adType === "vast")
+      } else if (response.adType === "vast") {
         this.vastXMLHandler(response.xml);
+      }
     } else if (this.options.vmapUrl) {
       this.handleVMAP(this.options.vmapUrl);
     } else if (this.options.vastUrl) {
@@ -689,17 +691,14 @@ var _Vast = class extends Plugin {
       };
     }
   }
-  macroReplacement(url) {
-    const widthInt = getComputedStyle(this.player.el()).width;
-    const heightInt = getComputedStyle(this.player.el()).height;
-    let currentUrl = url;
-    currentUrl = url.replace("{player.width}", widthInt);
-    currentUrl = url.replace("SMARTTV_ADS_DISPLAY_HEIGHT", heightInt);
-    return currentUrl;
+  macroReplacement(url, customMacros) {
+    return this.player.ads.adMacroReplacement(url, false, customMacros);
   }
   async handleVAST(vastUrl2, onError = null) {
     this.vastClient = new import_vast_client2.VASTClient();
-    vastUrl2 = this.macroReplacement(vastUrl2);
+    if (this.options.customMacros) {
+      vastUrl2 = this.macroReplacement(vastUrl2, this.options.customMacros);
+    }
     try {
       const response = await this.vastClient.get(vastUrl2, {
         allowMultipleAds: true,

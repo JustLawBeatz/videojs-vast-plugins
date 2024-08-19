@@ -15,7 +15,7 @@ class Vast extends Plugin {
     super(player, options);
     this.player = player;
 
-    const timeout = Boolean(options && (options["adUrl"] || options["vastUrl"] || options["vmapUrl"])) ? 5000 : 0
+    const timeout = options && (options['adUrl'] || options['vastUrl'] || options['vmapUrl']) ? 5000 : 0;
     // Load the options with default values
     const defaultOptions = {
       vastUrl: false,
@@ -27,6 +27,7 @@ class Vast extends Plugin {
       debug: false,
       timeout: timeout || 5000,
       isLimitedTracking: false,
+      customMacros: null,
     };
 
     // Assign options that were passed in by the consumer
@@ -57,31 +58,32 @@ class Vast extends Plugin {
         console.error(e);
       }
     }
-    //This method will call to schdedule Ad Breaks
-    this.debug("Plugin Initialised")
+    // This method will call to schedule Ad Breaks
+    this.debug('Plugin Initialised');
     player.scheduleAdBreak = (vastVjsOptions) => {
       this.scheduleAdBreak(vastVjsOptions);
     };
-    this.scheduleAdBreak(options)
+    this.scheduleAdBreak(options);
   }
 
-  async scheduleAdBreak(options){
-    if(!this.player) return;
-    this.options = {...this.options, timeout: 5000, ...options}
-    if(this.options.adUrl){
-      const response = await fetchAdUrl(this.options.adUrl)
-      if(response.adType === "vmap"){
-        this.handleVmapXml(response.vmap)
-      } else if(response.adType === "vast")
+  async scheduleAdBreak(options) {
+    if (!this.player) return;
+    this.options = { ...this.options, timeout: 5000, ...options };
+    if (this.options.adUrl) {
+      const response = await fetchAdUrl(this.options.adUrl);
+      if (response.adType === 'vmap') {
+        this.handleVmapXml(response.vmap);
+      } else if (response.adType === 'vast') {
         this.vastXMLHandler(response.xml)
+      }
     } else if (this.options.vmapUrl) {
       this.handleVMAP(this.options.vmapUrl);
-    } else if(this.options.vastUrl) {
-      this.vastHandler(this.options)
+    } else if (this.options.vastUrl) {
+      this.vastHandler(this.options);
     }
   }
 
-  vastXMLHandler(xml){
+  vastXMLHandler(xml) {
     this.disablePostroll();
     (async () => {
       await this.handleVASTXml(xml, () => {
@@ -95,7 +97,7 @@ class Vast extends Plugin {
     })();
   }
 
-  vastHandler(options){
+  vastHandler(options) {
     this.disablePostroll();
     (async () => {
       await this.handleVAST(options.vastUrl, () => {
@@ -114,7 +116,7 @@ class Vast extends Plugin {
   }
 
   disablePostroll() {
-    if(!this.player) return;
+    if (!this.player) return;
     this.player.on('readyforpostroll', () => {
       this.player?.trigger('nopostroll');
     });
@@ -147,21 +149,19 @@ class Vast extends Plugin {
     }
   }
 
-  macroReplacement(url) {
-    const widthInt = getComputedStyle(this.player.el()).width;
-    const heightInt = getComputedStyle(this.player.el()).height;
-    let currentUrl = url;
-    currentUrl = url.replace('{player.width}', widthInt);
-    currentUrl = url.replace('SMARTTV_ADS_DISPLAY_HEIGHT', heightInt);
-    return currentUrl;
+  macroReplacement(url, customMacros) {
+    return this.player.ads.adMacroReplacement(url, false, customMacros);
   }
 
   async handleVAST(vastUrl, onError = null) {
     // Now let's fetch some adsonp
     this.vastClient = new VASTClient();
     // Test Code
-    // eslint-disable-next-line no-param-reassign
-    vastUrl = this.macroReplacement(vastUrl);
+    // eslint-disable-next-line no-param-reassign, no-prototype-builtins
+    if (this.options.customMacros) {
+      // eslint-disable-next-line no-param-reassign
+      vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
+    }
     try {
       const response = await this.vastClient.get(vastUrl, {
         allowMultipleAds: true,
@@ -230,7 +230,7 @@ class Vast extends Plugin {
 
   readAd() {
     const currentAd = this.getNextAd();
-    if(!currentAd) return
+    if (!currentAd) return
     // Retrieve the CTA URl to render
     this.ctaUrl = Vast.getBestCtaUrl(currentAd?.linearCreative());
     this.debug('ctaUrl', this.ctaUrl);
@@ -619,7 +619,7 @@ class Vast extends Plugin {
   }
 
   addEventsListeners() {
-    if(!this.player) return;
+    if (!this.player) return;
     // ad events
     this.player.one('adplaying', this.onFirstPlay);
     this.player.on('adplaying', this.onAdPlay);
