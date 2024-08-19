@@ -689,16 +689,17 @@ var _Vast = class extends Plugin {
       };
     }
   }
+  macroReplacement(url) {
+    const widthInt = getComputedStyle(this.player.el()).width;
+    const heightInt = getComputedStyle(this.player.el()).height;
+    let currentUrl = url;
+    currentUrl = url.replace("{player.width}", widthInt);
+    currentUrl = url.replace("SMARTTV_ADS_DISPLAY_HEIGHT", heightInt);
+    return currentUrl;
+  }
   async handleVAST(vastUrl2, onError = null) {
     this.vastClient = new import_vast_client2.VASTClient();
-    this.vastClient.addURLTemplateFilter((url) => {
-      const widthInt = getComputedStyle(this.player.el()).width;
-      const heightInt = getComputedStyle(this.player.el()).height;
-      let currentUrl = url;
-      currentUrl = url.replace("{player.width}", widthInt);
-      currentUrl = url.replace("SMARTTV_ADS_DISPLAY_HEIGHT", heightInt);
-      return currentUrl;
-    });
+    vastUrl2 = this.macroReplacement(vastUrl2);
     try {
       const response = await this.vastClient.get(vastUrl2, {
         allowMultipleAds: true,
