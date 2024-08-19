@@ -27,7 +27,7 @@ class Vast extends Plugin {
       debug: false,
       timeout: timeout || 5000,
       isLimitedTracking: false,
-      customMacros: null,
+      customUserMacros: null,
     };
 
     // Assign options that were passed in by the consumer
@@ -158,10 +158,10 @@ class Vast extends Plugin {
     this.vastClient = new VASTClient();
     // Test Code
     // eslint-disable-next-line no-param-reassign, no-prototype-builtins
-    console.log(this.options.customMacros);
-    if (this.options.customMacros !== null) {
+    console.log(this.options.customUserMacros);
+    if (this.options.customUserMacros !== null) {
       // eslint-disable-next-line no-param-reassign
-      vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
+      vastUrl = this.macroReplacement(vastUrl, this.options.customUserMacros);
       console.log(`vastUrl: ${vastUrl}`);
     }
     try {

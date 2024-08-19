@@ -767,7 +767,7 @@ var _Vast = class extends Plugin {
       debug: false,
       timeout: timeout || 5e3,
       isLimitedTracking: false,
-      customMacros: null
+      customUserMacros: null
     };
     this.options = Object.assign(defaultOptions, options);
     this.setMacros();
@@ -875,9 +875,9 @@ var _Vast = class extends Plugin {
   async handleVAST(vastUrl, onError = null) {
     var _a;
     this.vastClient = new VASTClient();
-    console.log(this.options.customMacros);
-    if (this.options.customMacros !== null) {
-      vastUrl = this.macroReplacement(vastUrl, this.options.customMacros);
+    console.log(this.options.customUserMacros);
+    if (this.options.customUserMacros !== null) {
+      vastUrl = this.macroReplacement(vastUrl, this.options.customUserMacros);
       console.log(`vastUrl: ${vastUrl}`);
     }
     try {
