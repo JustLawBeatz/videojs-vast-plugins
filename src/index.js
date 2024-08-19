@@ -150,6 +150,15 @@ class Vast extends Plugin {
   async handleVAST(vastUrl, onError = null) {
     // Now let's fetch some adsonp
     this.vastClient = new VASTClient();
+    // Test Code
+    this.vastClient.addURLTemplateFilter((url) => {
+      const widthInt = getComputedStyle(this.player.el()).width;
+      const heightInt = getComputedStyle(this.player.el()).height;
+      let currentUrl = url;
+      currentUrl = url.replace('{player.width}', widthInt);
+      currentUrl = url.replace('SMARTTV_ADS_DISPLAY_HEIGHT', heightInt);
+      return currentUrl;
+    });
     try {
       const response = await this.vastClient.get(vastUrl, {
         allowMultipleAds: true,
