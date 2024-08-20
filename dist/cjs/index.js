@@ -423,6 +423,10 @@ function addIcons(ad) {
       } = icon;
       let iconContainer = null;
       if (staticResource) {
+        iconContainer = document.createElement("img");
+        iconContainer.src = staticResource;
+        iconContainer.height = height > 0 ? height : 100;
+        iconContainer.width = width > 0 ? width : 100;
       } else if (htmlResource) {
         iconContainer = document.createElement("div");
         iconContainer.innerHTML = icon.htmlResource;
