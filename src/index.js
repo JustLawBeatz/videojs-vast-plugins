@@ -501,7 +501,7 @@ class Vast extends Plugin {
       let skipRemainingTime = Math.round(skipDelay - this.player.currentTime());
       let isSkippable = skipRemainingTime < 1;
       // add the skip button
-      const skipButtonDiv = document.createElement('div');
+      const skipButtonDiv = document.createElement('button');
       skipButtonDiv.id = 'videojs-vast-skipButton';
       skipButtonDiv.style.cssText = 'bottom: 90px; cursor: default; padding: 15px; position: absolute; right: 0; z-index: 3; background: rgba(0, 0, 0, 0.8); min-width: 30px; pointer-events: none;';
       skipButtonDiv.innerHTML = isSkippable ? 'skip >>' : skipRemainingTime.toFixed();
