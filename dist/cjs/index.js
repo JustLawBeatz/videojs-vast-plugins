@@ -696,7 +696,7 @@ var _Vast = class extends Plugin {
     }
   }
   macroReplacement(url, customMacros) {
-    return this.player.ads.adMacroReplacement(url, false, customMacros);
+    return this.player.ads.adMacroReplacement(url, true, customMacros);
   }
   async handleVAST(vastUrl, onError = null) {
     this.vastClient = new import_vast_client2.VASTClient();
