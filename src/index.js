@@ -5,7 +5,9 @@ import {
   injectScriptTag, getLocalISOString, convertTimeOffsetToSeconds,
 } from './lib';
 import { playLinearAd, playNonLinearAd, playCompanionAd } from './modes';
-import { addIcons, handleVMAP, handleVmapXml, parseInlineVastData } from './features';
+import {
+  addIcons, handleVMAP, handleVmapXml, parseInlineVastData,
+} from './features';
 import { fetchAdUrl } from './lib/fetchAdUrl';
 
 const Plugin = videojs.getPlugin('plugin');
@@ -158,11 +160,9 @@ class Vast extends Plugin {
     this.vastClient = new VASTClient();
     // Test Code
     // eslint-disable-next-line no-param-reassign, no-prototype-builtins
-    console.log(this.options.customUserMacros);
     if (this.options.customUserMacros !== null) {
       // eslint-disable-next-line no-param-reassign
       vastUrl = this.macroReplacement(vastUrl, this.options.customUserMacros);
-      console.log(`vastUrl: ${vastUrl}`);
     }
     try {
       const response = await this.vastClient.get(vastUrl, {
@@ -194,7 +194,6 @@ class Vast extends Plugin {
   async handleVASTXml(vast, onError = null) {
     // Now let's fetch some adsonp
     this.vastClient = new VASTClient();
-    console.log('calling handleVASTXml in postroll');
     this.vastParser = new VASTParser();
     try {
       const response = await this.vastParser.parseVAST(vast, {

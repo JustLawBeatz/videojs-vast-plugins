@@ -879,10 +879,8 @@ var _Vast = class extends Plugin {
   async handleVAST(vastUrl, onError = null) {
     var _a;
     this.vastClient = new VASTClient();
-    console.log(this.options.customUserMacros);
     if (this.options.customUserMacros !== null) {
       vastUrl = this.macroReplacement(vastUrl, this.options.customUserMacros);
-      console.log(`vastUrl: ${vastUrl}`);
     }
     try {
       const response = await this.vastClient.get(vastUrl, {
@@ -911,7 +909,6 @@ var _Vast = class extends Plugin {
   async handleVASTXml(vast, onError = null) {
     var _a;
     this.vastClient = new VASTClient();
-    console.log("calling handleVASTXml in postroll");
     this.vastParser = new VASTParser2();
     try {
       const response = await this.vastParser.parseVAST(vast, {
