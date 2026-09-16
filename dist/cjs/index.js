@@ -601,6 +601,7 @@ var _Vast = class extends Plugin {
     this.adsArray = [];
     this.domElements = [];
     this.iconContainers = [];
+    this.skipButtonInterval = null;
     const videojsContribAdsOptions = {
       debug: this.options.debug,
       timeout: this.options.timeout
@@ -991,7 +992,12 @@ var _Vast = class extends Plugin {
       skipButtonDiv.innerHTML = isSkippable ? "skip >>" : skipRemainingTime.toFixed();
       this.domElements.push(skipButtonDiv);
       this.player.el().appendChild(skipButtonDiv);
-      const interval = setInterval(() => {
+      this.clearSkipButtonInterval();
+      this.skipButtonInterval = setInterval(() => {
+        if (!this.player) {
+          this.clearSkipButtonInterval();
+          return;
+        }
         skipRemainingTime = Math.round(skipDelay - this.player.currentTime());
         isSkippable = skipRemainingTime < 1;
         if (isSkippable) {
@@ -1000,10 +1006,16 @@ var _Vast = class extends Plugin {
           skipButtonDiv.addEventListener("click", () => {
             this.player?.trigger("skip");
           });
-          clearInterval(interval);
+          this.clearSkipButtonInterval();
         }
         skipButtonDiv.innerHTML = isSkippable ? "skip >>" : skipRemainingTime.toFixed();
       }, 1e3);
+    }
+  }
+  clearSkipButtonInterval() {
+    if (this.skipButtonInterval) {
+      clearInterval(this.skipButtonInterval);
+      this.skipButtonInterval = null;
     }
   }
   onAdError = (evt) => {
@@ -1157,7 +1169,9 @@ var _Vast = class extends Plugin {
   */
   dispose() {
     this.debug("dispose");
+    this.clearSkipButtonInterval();
     this.removeEventsListeners();
+    this.removeDomElements();
     super.dispose();
   }
 };
