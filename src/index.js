@@ -45,6 +45,9 @@ class Vast extends Plugin {
     // array of icons dom containers
     this.iconContainers = [];
 
+    // skip button countdown timer
+    this.skipButtonInterval = null;
+
     const videojsContribAdsOptions = {
       debug: this.options.debug,
       timeout: this.options.timeout,
@@ -507,7 +510,13 @@ class Vast extends Plugin {
       this.domElements.push(skipButtonDiv);
       this.player.el().appendChild(skipButtonDiv);
       // update time
-      const interval = setInterval(() => {
+      this.clearSkipButtonInterval();
+      this.skipButtonInterval = setInterval(() => {
+        // The plugin may have been disposed (player set to null) while the ad was playing
+        if (!this.player) {
+          this.clearSkipButtonInterval();
+          return;
+        }
         skipRemainingTime = Math.round(skipDelay - this.player.currentTime());
         isSkippable = skipRemainingTime < 1;
         if (isSkippable) {
@@ -516,10 +525,17 @@ class Vast extends Plugin {
           skipButtonDiv.addEventListener('click', () => {
             this.player?.trigger('skip');
           });
-          clearInterval(interval);
+          this.clearSkipButtonInterval();
         }
         skipButtonDiv.innerHTML = isSkippable ? 'skip >>' : skipRemainingTime.toFixed();
       }, 1000);
+    }
+  }
+
+  clearSkipButtonInterval() {
+    if (this.skipButtonInterval) {
+      clearInterval(this.skipButtonInterval);
+      this.skipButtonInterval = null;
     }
   }
 
@@ -783,7 +799,9 @@ class Vast extends Plugin {
   */
   dispose() {
     this.debug('dispose');
+    this.clearSkipButtonInterval();
     this.removeEventsListeners();
+    this.removeDomElements();
     super.dispose();
   }
 }
