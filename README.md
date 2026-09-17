@@ -51,7 +51,7 @@ const videoJsInstance = videojs('my-player', {
 });
 
 // Set up the VAST options
-// `Supported Options = vastUrl || vmapUrl || adUrl || verificationTimeout || addCtaClickZone || addSkipButton || debug || timeout || isLimitedTracking`
+// `Supported Options = vastUrl || vmapUrl || adUrl || verificationTimeout || addCtaClickZone || addSkipButton || debug || timeout || isLimitedTracking || skipPastMidrolls || midrollJumpThreshold`
 
 const adsOptions = {
   adUrl: 'https://points-to-vast-manifest.com/',
@@ -93,6 +93,8 @@ This plugin currently supports a handful of options that might help you customiz
 * **debug** (boolean) - Display detailed logging in the browser console. ***Default: false***
 * **addCtaClickZone** (boolean) - Add or not a clickzone for the cta url. ***Default: true***
 * **addSkipButton** (boolean) - Add or not a skip button for skippable ads. ***Default: true***
+* **skipPastMidrolls** (boolean) - Do not play midrolls the playhead jumped over instead of reaching, which happens when the content resumes at a saved position or the viewer seeks forward. Without it, every skipped break is played back to back before the content continues. ***Default: false***
+* **midrollJumpThreshold** (seconds - int) - How far behind the playhead a midroll has to be before `skipPastMidrolls` treats it as jumped over rather than reached. Keep it above the size of a single seek step so seeking slightly past a break still plays it. ***Default: 10***
 
 #### Events
 

@@ -30,6 +30,8 @@ class Vast extends Plugin {
       timeout: timeout || 5000,
       isLimitedTracking: false,
       customUserMacros: null,
+      skipPastMidrolls: false,
+      midrollJumpThreshold: 10,
     };
 
     // Assign options that were passed in by the consumer
@@ -383,9 +385,22 @@ class Vast extends Plugin {
   // track on regular content progress
   onProgress = async () => {
     if (this.watchForProgress && this.watchForProgress.length > 0) {
+      const currentTime = this.player.currentTime();
+      const duration = this.player.duration();
+      // The playhead can jump over midrolls instead of reaching them: resuming at a saved
+      // position, or seeking forward. Those breaks are dropped rather than played back to back.
+      if (this.options.skipPastMidrolls) {
+        while (this.watchForProgress.length > 0
+          && currentTime - convertTimeOffsetToSeconds(this.watchForProgress[0].timeOffset, duration)
+            > this.options.midrollJumpThreshold) {
+          this.debug('midroll jumped over, not playing it', this.watchForProgress[0].timeOffset);
+          this.watchForProgress.shift();
+        }
+        if (this.watchForProgress.length === 0) return;
+      }
       const { timeOffset } = this.watchForProgress[0];
-      const timeOffsetInSeconds = convertTimeOffsetToSeconds(timeOffset, this.player.duration());
-      if (this.player.currentTime() > timeOffsetInSeconds) {
+      const timeOffsetInSeconds = convertTimeOffsetToSeconds(timeOffset, duration);
+      if (currentTime > timeOffsetInSeconds) {
         const nextAd = this.watchForProgress.shift();
         if (nextAd.vastUrl) {
           await this.handleVAST(nextAd.vastUrl);
