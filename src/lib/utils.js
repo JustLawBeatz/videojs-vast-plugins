@@ -22,8 +22,8 @@ export const convertTimeOffsetToSeconds = (timecode, duration = null) => {
   if (timecode.includes('#')) {
     return timecode.replace('#', '');
   }
-  // convert timeoffset in timecode
+  // convert timeoffset in timecode, the milliseconds part is optional
   const [time, ms] = timecode.split('.');
   const [hours, minutes, seconds] = time.split(':');
-  return Number(`${parseInt(hours, 10) * 3600 + parseInt(minutes, 10) * 60 + parseInt(seconds, 10)}.${ms}`);
+  return Number(`${parseInt(hours, 10) * 3600 + parseInt(minutes, 10) * 60 + parseInt(seconds, 10)}.${ms || 0}`);
 };
